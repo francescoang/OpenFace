@@ -36,7 +36,7 @@
 #ifndef FACE_ANALYSER_PARAM_H
 #define FACE_ANALYSER_PARAM_H
 
-#include <stdafx_fa.h>
+#include "stdafx_fa.h"
 
 namespace FaceAnalysis
 {
