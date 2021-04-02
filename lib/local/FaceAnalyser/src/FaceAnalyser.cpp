@@ -40,6 +40,61 @@
 
 using namespace FaceAnalysis;
 
+
+FaceAnalyser::FaceAnalyser()
+{
+
+	FaceAnalysis::FaceAnalyserParameters face_analyser_params = FaceAnalysis::FaceAnalyserParameters();
+	this->Read(face_analyser_params.getModelLoc());
+		
+	align_mask = face_analyser_params.getAlignMask();
+	align_scale_out = face_analyser_params.getSimScaleOut();
+	align_width_out = face_analyser_params.getSimSizeOut();
+	align_height_out = face_analyser_params.getSimSizeOut();
+
+	align_scale_au = face_analyser_params.sim_scale_au;
+	align_width_au = face_analyser_params.sim_size_au;
+	align_height_au = face_analyser_params.sim_size_au;
+
+	// Initialise the histograms that will represent bins from 0 - 1 (as HoG values are only stored as those)
+	num_bins_hog = 1000;
+	max_val_hog = 1;
+	min_val_hog = -0.005;
+
+	// The geometry histogram ranges from -60 to 60
+	num_bins_geom = 10000;
+	max_val_geom = 60;
+	min_val_geom = -60;
+		
+	// Keep track for how many frames have been tracked so far
+	frames_tracking = 0;
+
+	// If the model used is dynamic (person callibration and video correction)
+	dynamic = face_analyser_params.getDynamic();
+
+	out_grayscale = face_analyser_params.grayscale;
+
+	if(face_analyser_params.getOrientationBins().empty())
+	{
+		// Just using frontal currently
+		head_orientations.push_back(cv::Vec3d(0,0,0));
+	}
+	else
+	{
+		head_orientations = face_analyser_params.getOrientationBins();
+	}
+	hog_hist_sum.resize(head_orientations.size());
+	face_image_hist_sum.resize(head_orientations.size());
+	hog_desc_hist.resize(head_orientations.size());
+	geom_hist_sum = 0;
+	face_image_hist.resize(head_orientations.size());
+
+	au_prediction_correction_count.resize(head_orientations.size(), 0);
+	au_prediction_correction_histogram.resize(head_orientations.size());
+	dyn_scaling.resize(head_orientations.size());
+
+}
+
 // Constructor from a model file (or a default one if not provided
 FaceAnalyser::FaceAnalyser(const FaceAnalysis::FaceAnalyserParameters& face_analyser_params)
 {
