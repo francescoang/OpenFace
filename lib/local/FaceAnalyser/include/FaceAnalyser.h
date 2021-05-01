@@ -64,7 +64,7 @@ public:
 	// Constructor for FaceAnalyser using the parameters structure
 	FaceAnalyser();
 	FaceAnalyser(const FaceAnalysis::FaceAnalyserParameters& face_analyser_params);
-
+	~FaceAnalyser() { }
 	void AddNextFrame(const cv::Mat& frame, const cv::Mat_<float>& detected_landmarks, bool success, double timestamp_seconds, bool online = false);
 
 	double GetCurrentTimeSeconds();
